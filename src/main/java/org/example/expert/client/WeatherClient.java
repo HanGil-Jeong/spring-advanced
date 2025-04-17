@@ -26,14 +26,21 @@ public class WeatherClient {
         ResponseEntity<WeatherDto[]> responseEntity =
                 restTemplate.getForEntity(buildWeatherApiUri(), WeatherDto[].class);
 
+        /**
+         * if-else문은 if문의 조건이 거짓이면 else문이 작동하는 원리로 알고 있습니다.
+         * 리팩도링 전의 코드는 날씨 데이터를 가져오는 것에 실패 여부는 날씨 데이터가 정상적으러 있어도
+         * 기타 다른 문제로 인해 실패할 수 있어서 날씨 데이터의 유무랑
+         * if-else문으로 역어서 표현하지 않아도 될 것 같아서 else문을 해체하여 가독성을 높혔습니다.
+         */
         WeatherDto[] weatherArray = responseEntity.getBody();
         if (!HttpStatus.OK.equals(responseEntity.getStatusCode())) {
             throw new ServerException("날씨 데이터를 가져오는데 실패했습니다. 상태 코드: " + responseEntity.getStatusCode());
-        } else {
-            if (weatherArray == null || weatherArray.length == 0) {
-                throw new ServerException("날씨 데이터가 없습니다.");
-            }
         }
+
+        if (weatherArray == null || weatherArray.length == 0) {
+            throw new ServerException("날씨 데이터가 없습니다.");
+        }
+
 
         String today = getCurrentDate();
 
